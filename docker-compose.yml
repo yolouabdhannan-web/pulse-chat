@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pulse
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pulse-dev-password}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    env_file: ./server/.env
+    environment:
+      DATABASE_URL: postgresql://pulse:${POSTGRES_PASSWORD:-pulse-dev-password}@postgres:5432/pulse
+      CLIENT_ORIGIN: http://localhost:8080
+      NODE_ENV: production
+    volumes: [uploads:/app/uploads]
+    depends_on: [postgres]
+
+  client:
+    build: ./client
+    restart: unless-stopped
+    ports: ["8080:80"]
+    depends_on: [server]
+
+volumes:
+  postgres-data:
+  uploads:

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Phone, Video } from 'lucide-react';
 import { useChat } from '../context/ChatContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCalls } from '../context/CallContext.jsx';
@@ -10,6 +10,7 @@ import Avatar from './Avatar.jsx';
 import MessageBubble from './MessageBubble.jsx';
 import Composer from './Composer.jsx';
 import MediaViewer from './MediaViewer.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 
 export default function ChatWindow({ id }) {
   const { chats, messages, online, typing, messageError, connected, setActive, react } = useChat();
@@ -60,16 +61,17 @@ export default function ChatWindow({ id }) {
               aria-label={`Appel vocal avec ${meta.name}`}
               title="Appel vocal"
               className="rounded-xl px-2 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:opacity-40 sm:px-3 sm:text-sm"
-            >Vocal</button>
+            ><Phone size={18} /></button>
             <button
               onClick={async () => { setCallError(''); try { await startCall(id, meta.userId, meta.name, 'video'); } catch (error) { setCallError(error.message); } }}
               disabled={!!call || !connected}
               aria-label={`Appel vidéo avec ${meta.name}`}
               title="Appel vidéo"
               className="rounded-xl px-2 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:opacity-40 sm:px-3 sm:text-sm"
-            >Vidéo</button>
+            ><Video size={18} /></button>
           </div>
         )}
+        <ThemeToggle />
       </header>
       {callError && <p role="alert" className="border-b border-emerald-700/15 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">{callError}</p>}
       {messageError && <p role="alert" className="border-b border-emerald-700/15 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">{messageError}</p>}

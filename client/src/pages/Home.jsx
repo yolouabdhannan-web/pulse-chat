@@ -2,6 +2,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { ArrowRight, MessageCircle, Shield, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import Avatar from '../components/Avatar.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 
 const highlights = [
   { icon: MessageCircle, title: 'Discutez facilement', text: 'Échangez en privé ou en groupe autour de vos cours et de la vie étudiante.' },
@@ -16,14 +17,15 @@ export default function Home() {
 
   return (
     <main className="min-h-full bg-white text-emerald-950">
-      <header className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
-        <Link to="/" className="flex items-center gap-3" aria-label="Accueil HECM">
-          <img src="/favicon.svg" alt="" className="h-11 w-11" />
-          <span className="text-xl font-extrabold tracking-tight">HECM<span className="text-emerald-700"> Connect</span></span>
+      <header className="mx-auto flex max-w-7xl items-center justify-between px-3 py-4 sm:px-8 sm:py-5">
+        <Link to="/" className="flex min-w-0 items-center gap-2 sm:gap-3" aria-label="Accueil HECM">
+          <img src="/favicon.svg" alt="" className="h-9 w-9 shrink-0 sm:h-11 sm:w-11" />
+          <span className="whitespace-nowrap text-sm font-extrabold tracking-tight min-[360px]:text-base sm:text-xl">HECM<span className="text-emerald-700"> Connect</span></span>
         </Link>
-        <nav className="flex items-center gap-2">
-          <Link to="/login" className="rounded-xl px-4 py-2.5 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50">Se connecter</Link>
-          <Link to="/register" className="rounded-xl bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:bg-emerald-700">S’inscrire</Link>
+        <nav className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <ThemeToggle className="!h-8 !w-8 !rounded-lg sm:!h-10 sm:!w-10 sm:!rounded-xl" />
+          <Link to="/login" className="rounded-xl px-1.5 py-2.5 text-[11px] font-semibold text-emerald-900 transition hover:bg-emerald-50 sm:px-4 sm:text-sm">Se connecter</Link>
+          <Link to="/register" className="rounded-xl bg-emerald-800 px-2.5 py-2.5 text-[11px] font-semibold text-white shadow-glow transition hover:bg-emerald-700 sm:px-4 sm:text-sm">S’inscrire</Link>
         </nav>
       </header>
 

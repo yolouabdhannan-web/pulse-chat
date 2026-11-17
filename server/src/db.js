@@ -50,6 +50,15 @@ export async function initDb() {
       PRIMARY KEY (conversation_id, user_id)
     );
 
+    CREATE TABLE IF NOT EXISTS user_contacts (
+      owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      contact_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      display_name TEXT CHECK (char_length(display_name) <= 60),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (owner_id, contact_id),
+      CHECK (owner_id <> contact_id)
+    );
+
     CREATE TABLE IF NOT EXISTS messages (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
@@ -97,6 +106,8 @@ export async function initDb() {
       ON reports (status, created_at DESC);
     CREATE INDEX IF NOT EXISTS conversation_members_user_idx
       ON conversation_members (user_id);
+    CREATE INDEX IF NOT EXISTS user_contacts_owner_idx
+      ON user_contacts (owner_id);
     CREATE INDEX IF NOT EXISTS stories_expires_idx ON stories (expires_at);
   `);
   await query(`

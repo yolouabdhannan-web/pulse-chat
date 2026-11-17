@@ -10,6 +10,14 @@ router.use(requireAuth, requireUser);
 const isId = (value) => typeof value === 'string'
   && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 const escapeLike = (value) => value.replace(/[\\%_]/g, '\\$&');
+const contactDTO = (contact) => ({
+  id: String(contact.id),
+  username: contact.username,
+  displayName: contact.displayName,
+  color: contact.color,
+  avatar: contact.avatar?.key ? { ...contact.avatar, url: `/api/files/${contact.avatar.key}` } : null,
+  lastSeen: contact.lastSeen,
+});
 const MESSAGE_COLUMNS = `
   m.id, m.conversation_id AS "conversation", m.sender_id AS "senderId",
   u.username AS "senderUsername", u.color AS "senderColor", m.type, m.text,
@@ -88,6 +96,66 @@ router.get('/users', async (req, res) => {
     values,
   );
   res.json({ users: rows.map(publicUser) });
+});
+
+router.get('/contacts', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  const values = [req.user.id];
+  let search = '';
+  if (q) {
+    values.push(`%${escapeLike(q)}%`);
+    search = ` AND (COALESCE(uc.display_name, u.username) ILIKE $2 ESCAPE '\\'
+                  OR u.username ILIKE $2 ESCAPE '\\')`;
+  }
+  const { rows } = await query(
+    `SELECT u.id, u.username, u.color, u.avatar, u.last_seen AS "lastSeen",
+            uc.display_name AS "displayName"
+     FROM user_contacts uc
+     JOIN users u ON u.id = uc.contact_id
+     WHERE uc.owner_id = $1 AND u.blocked = FALSE AND u.role = 'user'${search}
+     ORDER BY COALESCE(uc.display_name, u.username), u.username`,
+    values,
+  );
+  res.json({ contacts: rows.map(contactDTO) });
+});
+
+router.post('/contacts', async (req, res) => {
+  const identifier = typeof req.body?.identifier === 'string'
+    ? req.body.identifier.trim().replace(/^@/, '')
+    : '';
+  const displayName = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
+  if (!/^[a-zA-Z0-9_]{3,24}$/.test(identifier) || displayName.length > 60) {
+    return res.status(400).json({ error: 'Identifiant ou nom du contact invalide' });
+  }
+
+  const { rows: matches } = await query(
+    `SELECT id, username, color, avatar, last_seen AS "lastSeen"
+     FROM users
+     WHERE lower(username) = lower($1) AND blocked = FALSE AND role = 'user'
+     LIMIT 2`,
+    [identifier],
+  );
+  if (!matches.length) return res.status(404).json({ error: 'Aucun utilisateur trouvé avec cet identifiant' });
+  if (matches.length > 1) {
+    return res.status(409).json({ error: 'Identifiant ambigu : respectez les majuscules et minuscules du pseudo' });
+  }
+
+  const contact = matches[0];
+  if (String(contact.id) === String(req.user.id)) {
+    return res.status(400).json({ error: 'Vous ne pouvez pas vous ajouter vous-même' });
+  }
+  const { rows: saved } = await query(
+    `INSERT INTO user_contacts (owner_id, contact_id, display_name)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (owner_id, contact_id) DO NOTHING
+     RETURNING owner_id`,
+    [req.user.id, contact.id, displayName || null],
+  );
+  if (!saved.length) return res.status(409).json({ error: 'Ce contact est déjà ajouté' });
+
+  res.status(201).json({
+    contact: contactDTO({ ...contact, displayName: displayName || null }),
+  });
 });
 
 router.get('/', async (req, res) => {

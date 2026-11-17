@@ -194,6 +194,8 @@ export default function SettingsPage() {
           <h2 className="mb-1 text-lg font-bold text-emerald-950">Préférences de discussion</h2>
           <p className="mb-5 text-sm text-emerald-950/65">Ces préférences sont enregistrées sur cet appareil.</p>
           <div className="divide-y divide-emerald-100">
+            <PreferenceToggle title="Thème sombre" description="Activer le thème sombre sur l’ensemble de l’application."
+              checked={preferences.theme === 'dark'} onChange={(value) => updatePreference('theme', value ? 'dark' : 'light')} />
             <PreferenceToggle title="Envoyer avec Entrée" description="Appuyez sur Entrée pour envoyer ; Maj + Entrée ajoute une nouvelle ligne."
               checked={preferences.sendOnEnter} onChange={(value) => updatePreference('sendOnEnter', value)} />
             <PreferenceToggle title="Messages compacts" description="Réduire l’espace entre les messages pour afficher plus de la conversation."

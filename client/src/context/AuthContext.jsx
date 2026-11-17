@@ -11,6 +11,7 @@ export const DEFAULT_PREFERENCES = {
   textSize: 'normal',
   desktopNotifications: false,
   reduceMotion: false,
+  theme: 'light',
 };
 
 function readPreferences() {
@@ -23,6 +24,7 @@ function readPreferences() {
       compactMessages: saved.compactMessages === true,
       desktopNotifications: saved.desktopNotifications === true,
       reduceMotion: saved.reduceMotion === true,
+      theme: ['light', 'dark'].includes(saved.theme) ? saved.theme : 'light',
       textSize: ['small', 'normal', 'large'].includes(saved.textSize) ? saved.textSize : 'normal',
     };
   } catch {
@@ -51,6 +53,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('hecm-preferences', JSON.stringify(preferences));
     document.documentElement.dataset.reduceMotion = String(preferences.reduceMotion);
+    document.documentElement.dataset.theme = preferences.theme;
   }, [preferences]);
 
   const value = useMemo(() => ({

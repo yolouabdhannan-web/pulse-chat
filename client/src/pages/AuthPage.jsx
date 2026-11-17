@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle, Check, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { errMsg } from '../lib/api.js';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 
 const rules = {
   username: (v) => (/^[a-zA-Z0-9_]{3,24}$/.test(v) ? '' : '3 à 24 caractères : lettres, chiffres, _'),
@@ -57,7 +58,10 @@ export default function AuthPage({ mode }) {
   }
 
   return (
-    <div className="grid min-h-full place-items-center px-4 py-10">
+    <div className="relative grid min-h-full place-items-center px-4 py-10">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <motion.div initial={{ opacity: 0, y: 24, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass w-full max-w-md rounded-3xl p-8 sm:p-10">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-800 shadow-glow">

@@ -6,6 +6,7 @@ import { api, errMsg } from '../lib/api.js';
 import Avatar from '../components/Avatar.jsx';
 import { fmtDay, fmtSize } from '../lib/utils.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 
 const TABS = [['overview', 'Vue d’ensemble'], ['users', 'Utilisateurs'], ['reports', 'Modération']];
 
@@ -30,7 +31,7 @@ function Overview({ stats }) {
   ).join(' ');
   const cards = [
     [Users, 'Utilisateurs', stats.users, 'from-emerald-700 to-emerald-600'],
-    [Wifi, 'En ligne', stats.online, 'from-emerald-500 to-teal-400'],
+    [Wifi, 'En ligne', stats.online, 'from-emerald-500 to-emerald-400'],
     [MessageSquare, 'Messages', stats.messages, 'from-emerald-700 to-emerald-600'],
     [Image, 'Médias partagés', stats.media, 'from-emerald-700 to-emerald-600'],
     [Flag, 'Signalements', stats.pendingReports, 'from-emerald-700 to-emerald-600'],
@@ -214,6 +215,7 @@ export default function Admin() {
             <h1 className="text-3xl font-extrabold tracking-tight">Administration</h1>
             <p className="text-sm text-slate-400">Connecté en tant que {user.username}</p>
           </div>
+          <ThemeToggle />
           <button onClick={async () => { await logout(); navigate('/login'); }} className="btn-ghost shrink-0">
             <LogOut size={16} />Se déconnecter
           </button>

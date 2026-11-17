@@ -51,7 +51,7 @@ server/src
   storage.js          Disque local ou S3 (URL signées)
   models/index.js     DTOs et accès utilisateur PostgreSQL
   middleware/auth.js  JWT en cookie httpOnly, requireAuth / requireAdmin
-  routes/             auth, chats (DM + groupes), stories, media (upload + fichiers + signalement), admin
+  routes/             auth, chats (DM, groupes, contacts), stories, media (upload + fichiers + signalement), admin
 client/src
   App.jsx             Table des routes
   routes/guards.jsx   ProtectedRoute, AdminRoute, GuestRoute
@@ -59,6 +59,8 @@ client/src
   pages/              Home (accueil public), AuthPage (login/register), Settings, ChatShell, ChatPage, Admin
   components/         ChatList, ChatWindow, MessageBubble, Composer, MediaViewer, Avatar, Aurora
 ```
+
+Dans l’onglet Contacts, les utilisateurs peuvent enregistrer un pseudo avec un nom d’affichage facultatif, propre à leur compte.
 
 ## Routes protégées
 
@@ -74,7 +76,7 @@ Les gardes client améliorent l'expérience ; **la sécurité réelle est côté
 
 ## Sécurité intégrée
 
-Les étudiants peuvent modifier leur pseudo, leur photo de profil et leur mot de passe depuis « Paramètres ». Ils peuvent aussi personnaliser l’envoi avec Entrée, la densité et la taille des messages, les notifications bureau et les animations. Ces préférences sont enregistrées sur l’appareil. Les mots de passe sont stockés sous forme de hash non réversible : l’administration ne peut pas consulter les mots de passe existants, mais peut en définir un nouveau depuis la gestion des comptes.
+Les étudiants peuvent modifier leur pseudo, leur photo de profil et leur mot de passe depuis « Paramètres ». Ils peuvent aussi choisir le thème clair ou sombre pour toute l’application et personnaliser l’envoi avec Entrée, la densité et la taille des messages, les notifications bureau et les animations. Ces préférences sont enregistrées sur l’appareil. Les mots de passe sont stockés sous forme de hash non réversible : l’administration ne peut pas consulter les mots de passe existants, mais peut en définir un nouveau depuis la gestion des comptes.
 
 - Mots de passe hachés (bcrypt, coût 12), JWT 7 jours en cookie `httpOnly` + `sameSite=lax` (+ `secure` en production)
 - Rate limiting sur l'authentification, `helmet`, validation `zod`, requêtes PostgreSQL paramétrées

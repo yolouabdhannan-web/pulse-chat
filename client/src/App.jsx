@@ -7,10 +7,13 @@ import ChatPage from './pages/ChatPage.jsx';
 import Admin from './pages/Admin.jsx';
 import Home from './pages/Home.jsx';
 import SettingsPage from './pages/Settings.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 
 export default function App() {
+  const { preferences } = useAuth();
+
   return (
-    <>
+    <div className={`theme-root min-h-full ${preferences.theme === 'dark' ? 'theme-dark' : ''}`}>
       <Aurora />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -34,6 +37,6 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/chat" replace />} />
       </Routes>
-    </>
+    </div>
   );
 }

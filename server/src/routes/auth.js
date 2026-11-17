@@ -4,16 +4,31 @@ import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { query } from '../db.js';
 import { publicUser } from '../models/index.js';
-import { COOKIE, requireAuth, setAuthCookie, signToken } from '../middleware/auth.js';
+import { COOKIE, requireAuth, requireUser, setAuthCookie, signSocketToken, signToken } from '../middleware/auth.js';
 import * as storage from '../storage.js';
 
 const router = Router();
-router.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false }));
+router.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path === '/socket-token',
+}));
 
 const registerSchema = z.object({
   username: z.string().min(3).max(24).regex(/^[a-zA-Z0-9_]+$/, 'Lettres, chiffres et _ uniquement'),
   email: z.string().email(),
   password: z.string().min(8).regex(/[A-Za-z]/).regex(/\d/),
+});
+
+router.get('/socket-token', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+}), requireAuth, requireUser, (req, res) => {
+  res.json({ token: signSocketToken(req.user) });
 });
 
 router.post('/register', async (req, res) => {

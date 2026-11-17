@@ -1,10 +1,9 @@
 import { Server } from 'socket.io';
-import { parse } from 'cookie';
 import { z } from 'zod';
 import { config } from './config.js';
 import { query } from './db.js';
 import { setIo } from './io.js';
-import { COOKIE, userFromToken } from './middleware/auth.js';
+import { userFromSocketToken } from './middleware/auth.js';
 import { messageDTO, messageFromRow } from './models/index.js';
 
 const online = new Map();
@@ -84,7 +83,7 @@ export function initSocket(server) {
 
   io.use(async (socket, next) => {
     try {
-      const user = await userFromToken(parse(socket.handshake.headers.cookie || '')[COOKIE]);
+      const user = await userFromSocketToken(socket.handshake.auth?.token);
       if (!user || user.role !== 'user') return next(new Error('unauthorized'));
       socket.user = user;
       next();

@@ -25,7 +25,20 @@ cp server/.env.example server/.env   # éditez JWT_SECRET et ADMIN_PASSWORD
 docker compose up --build            # http://localhost:8080
 ```
 
-## Déploiement de production (Render)
+## Déploiement du frontend sur Vercel et de l’API sur Render
+
+Vercel sert l’application React et relaie les routes `/api/*` vers le serveur Render. L’API Express, PostgreSQL et Socket.IO restent sur Render, où ils peuvent maintenir les connexions temps réel. Le jeton d’authentification principal reste dans un cookie HTTP-only servi par le domaine Vercel; un jeton Socket.IO de courte durée est obtenu par l’API avant chaque connexion.
+
+1. Déployez d’abord l’API avec le Blueprint Render ci-dessous, puis notez son domaine `https://<service>.onrender.com`.
+2. Dans `client/vercel.json`, remplacez `https://pulse-chat.onrender.com` par le domaine exact du service Render si celui-ci est différent.
+3. Importez le dépôt dans Vercel avec `client` comme **Root Directory**. Vercel détecte Vite et utilise `npm run build` avec `dist` comme répertoire de sortie.
+4. Dans les variables d’environnement de Vercel, définissez `VITE_SOCKET_URL` avec l’origine du service Render (par exemple `https://pulse-chat.onrender.com`), puis redéployez le frontend.
+5. Dans Render, définissez `CLIENT_ORIGIN` sur le domaine de production Vercel (par exemple `https://pulse-chat.vercel.app`). Configurez aussi les secrets de la base, de l’administrateur et du stockage uniquement dans le tableau de bord Render.
+6. Vérifiez `/api/health` sur le domaine Vercel, puis testez inscription, connexion, messages temps réel et médias sur la version de production.
+
+Les connexions WebSocket partent directement de Vercel vers Render; seuls les appels HTTP `/api/*` sont relayés par la règle Vercel. Les domaines de prévisualisation Vercel ne sont pas autorisés par défaut par `CLIENT_ORIGIN`. Les fichiers médias doivent utiliser un stockage S3/R2 persistant configuré sur Render.
+
+## Déploiement complet de production sur Render
 
 Le client Vite et l’API Express/Socket.IO sont servis sur la même origine par le conteneur racine. Cette architecture conserve le cookie de session, les connexions WebSocket et les URLs relatives de l’application. Le backend ne doit pas être déployé en fonction serverless Vercel : Socket.IO, la présence en mémoire et la tâche de nettoyage nécessitent un processus Node persistant.
 

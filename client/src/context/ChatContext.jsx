@@ -36,6 +36,11 @@ export function ChatProvider({ children }) {
     const h = {
       connect: () => setConnected(false),
       disconnect: () => { ready.current = false; setConnected(false); },
+      connect_error: () => {
+        ready.current = false;
+        setConnected(false);
+        setMessageError('Impossible de connecter la messagerie temps réel. Vérifiez votre connexion et réessayez.');
+      },
       'session:ready': () => {
         ready.current = true;
         setConnected(true);

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pulse-chat
+    name: pulse-chat-hecm
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile

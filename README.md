@@ -32,8 +32,8 @@ Vercel sert l’application React et relaie les routes `/api/*` vers le serveur 
 1. Déployez d’abord l’API avec le Blueprint Render ci-dessous; le service proposé est `pulse-chat-hecm` et son domaine attendu est `https://pulse-chat-hecm.onrender.com`.
 2. Si Render attribue un autre domaine au service, remplacez `https://pulse-chat-hecm.onrender.com` dans `client/vercel.json` par le domaine exact.
 3. Importez le dépôt dans Vercel avec `client` comme **Root Directory**. Vercel détecte Vite et utilise `npm run build` avec `dist` comme répertoire de sortie.
-4. Dans les variables d’environnement de Vercel, définissez `VITE_SOCKET_URL` avec l’origine du service Render (par exemple `https://pulse-chat-hecm.onrender.com`), puis redéployez le frontend.
-5. Dans Render, définissez `CLIENT_ORIGIN` sur le domaine de production Vercel (par exemple `https://pulse-chat.vercel.app`). Configurez aussi les secrets de la base, de l’administrateur et du stockage uniquement dans le tableau de bord Render.
+4. Le client se connecte au WebSocket sur `https://pulse-chat-hecm.onrender.com` par défaut. Si Render attribue un autre domaine, définissez `VITE_SOCKET_URL` dans Vercel avec l’origine exacte, puis redéployez le frontend.
+5. Le Blueprint configure `CLIENT_ORIGIN` sur `https://pulse-chat-omega-silk.vercel.app`. Si Vercel attribue un autre domaine, modifiez cette variable dans Render. Configurez aussi les secrets de la base, de l’administrateur et du stockage uniquement dans le tableau de bord Render.
 6. Vérifiez `/api/health` sur le domaine Vercel, puis testez inscription, connexion, messages temps réel et médias sur la version de production.
 
 Les connexions WebSocket partent directement de Vercel vers Render; seuls les appels HTTP `/api/*` sont relayés par la règle Vercel. Les domaines de prévisualisation Vercel ne sont pas autorisés par défaut par `CLIENT_ORIGIN`. Les fichiers médias doivent utiliser un stockage S3/R2 persistant configuré sur Render.

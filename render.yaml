@@ -20,7 +20,7 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: CLIENT_ORIGIN
-        sync: false
+        value: https://pulse-chat-omega-silk.vercel.app
       - key: S3_BUCKET
         sync: false
       - key: S3_REGION

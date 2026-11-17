@@ -1,7 +1,9 @@
 import { io } from 'socket.io-client';
 import { api } from './api.js';
 
-const socketUrl = import.meta.env.VITE_SOCKET_URL || '/';
+const remoteSocketUrl = import.meta.env.VITE_SOCKET_URL
+  || (import.meta.env.PROD ? 'https://pulse-chat-hecm.onrender.com' : '');
+const socketUrl = remoteSocketUrl || '/';
 const socketOptions = {
   autoConnect: false,
   auth: (callback) => {
@@ -11,6 +13,6 @@ const socketOptions = {
   },
 };
 
-if (import.meta.env.VITE_SOCKET_URL) socketOptions.transports = ['websocket'];
+if (remoteSocketUrl) socketOptions.transports = ['websocket'];
 
 export const socket = io(socketUrl, socketOptions);
